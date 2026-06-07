@@ -23,7 +23,7 @@ let
     libnotify
     nautilus
     alejandra
-    blueberry
+    bluetui
     clipse
     fzf
     zoxide

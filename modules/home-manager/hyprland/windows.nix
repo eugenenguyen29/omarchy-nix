@@ -12,7 +12,7 @@
       # Force chromium into a tile to deal with --app bug
       "tile on, match:class ^(chromium)$"
       # Settings management
-      "float on, match:class ^(org.pulseaudio.pavucontrol|blueberry.py)$"
+      "float on, match:class ^(org.pulseaudio.pavucontrol)$"
       # Float Steam, fullscreen RetroArch
       "float on, match:class ^(steam)$"
       "fullscreen on, match:class ^(com.libretro.RetroArch)$"
