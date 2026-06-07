@@ -4,7 +4,7 @@
   ...
 }:
 let
-  selected_wallpaper_path = (import ../../lib/selected-wallpaper.nix config).wallpaper_path;
+  wallpaper = import ../../lib/selected-wallpaper.nix config;
 in
 {
   home.file = {
@@ -12,15 +12,18 @@ in
       source = ../../config/themes/wallpapers;
       recursive = true;
     };
-  };
+  }
+  # Copy any custom desktop/lock wallpapers into ~/Pictures/Wallpapers too.
+  // wallpaper.wallpaperFiles;
+
   services.hyprpaper = {
     enable = true;
     settings = {
       preload = [
-        selected_wallpaper_path
+        wallpaper.wallpaper_path
       ];
       wallpaper = [
-        ",${selected_wallpaper_path}"
+        ",${wallpaper.wallpaper_path}"
       ];
     };
   };

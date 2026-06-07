@@ -8,11 +8,9 @@ inputs:
 let
   palette = config.colorScheme.palette;
   convert = inputs.nix-colors.lib.conversions.hexToRGBString;
-  selected_wallpaper_path =
-    if (config.omarchy.hyprlock_wallpaper != null) then
-      toString config.omarchy.hyprlock_wallpaper
-    else
-      (import ../../lib/selected-wallpaper.nix config).wallpaper_path;
+  # Absolute path inside ~/Pictures/Wallpapers. Resolves to the configured
+  # hyprlock_wallpaper (copied in by hyprpaper.nix) or the theme wallpaper.
+  selected_wallpaper_path = (import ../../lib/selected-wallpaper.nix config).hyprlock_wallpaper_path;
 
   backgroundRgb = "rgba(${convert ", " palette.base00}, 0.8)";
   surfaceRgb = "rgb(${convert ", " palette.base02})";
