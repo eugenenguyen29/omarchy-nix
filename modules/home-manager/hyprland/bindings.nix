@@ -25,8 +25,8 @@ in
         "SUPER, K, exec, ~/.local/share/omarchy/bin/omarchy-show-keybindings"
 
         # Control tiling
-        "SUPER, J, togglesplit, # dwindle"
-        "SUPER, P, pseudo, # dwindle"
+        "SUPER, J, layoutmsg, togglesplit"
+        "SUPER, P, layoutmsg, pseudo"
         "SUPER, V, togglefloating,"
         "SUPER SHIFT, Plus, fullscreen,"
 
