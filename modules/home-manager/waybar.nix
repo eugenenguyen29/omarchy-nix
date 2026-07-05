@@ -152,7 +152,7 @@ in
           format-disabled = "󰂲";
           format-connected = "";
           tooltip-format = "Devices connected: {num_connections}";
-          on-click = "bluetui";
+          on-click = "ghostty -e bluetui";
         };
         wireplumber = {
           # Changed from "pulseaudio"
