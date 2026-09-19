@@ -2,11 +2,18 @@
   description = "Omarchy - Base configuration flake";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    hyprland.url = "github:hyprwm/Hyprland";
+    hyprland.url = "github:hyprwm/Hyprland/v0.56.0";
     nix-colors.url = "github:misterio77/nix-colors";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    elephant.url = "github:abenz1267/elephant";
+
+    walker = {
+      url = "github:abenz1267/walker";
+      inputs.elephant.follows = "elephant";
     };
   };
   outputs =
@@ -16,6 +23,7 @@
       hyprland,
       nix-colors,
       home-manager,
+      ...
     }:
     {
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
@@ -23,9 +31,7 @@
       nixosModules = {
         default =
           {
-            config,
             lib,
-            pkgs,
             ...
           }:
           {
@@ -43,14 +49,13 @@
       homeManagerModules = {
         default =
           {
-            config,
             lib,
-            pkgs,
             osConfig ? { },
             ...
           }:
           {
             imports = [
+              inputs.walker.homeManagerModules.default
               nix-colors.homeManagerModules.default
               (import ./modules/home-manager/default.nix inputs)
             ];

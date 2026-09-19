@@ -14,10 +14,8 @@
       "wl-clip-persist --clipboard regular & clipse -listen"
 
       "pkill -SIGUSR2 waybar || waybar"
-      # "dropbox-cli start"  # Uncomment to run Dropbox
-    ];
 
-    exec = [
+      "hyprpaper"
     ];
   };
 }
