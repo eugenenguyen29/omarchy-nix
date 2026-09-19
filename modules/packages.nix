@@ -4,6 +4,24 @@
   exclude_packages ? [ ],
 }:
 let
+  disable-apple-trackpad = pkgs.writeScriptBin "disable-apple-trackpad" (
+    builtins.readFile ../scripts/disable-apple-trackpad.sh
+  );
+
+  omarchy-show-keybindings = pkgs.writeScriptBin "omarchy-show-keybindings" (
+    builtins.readFile ../scripts/omarchy-show-keybindings.sh
+  );
+
+  omarchy-power-menu = pkgs.writeScriptBin "omarchy-power-menu" (
+    builtins.readFile ../scripts/omarchy-power-menu.sh
+  );
+
+  customScripts = [
+    disable-apple-trackpad
+    omarchy-show-keybindings
+    omarchy-power-menu
+  ];
+
   # Essential Hyprland packages - cannot be excluded
   hyprlandPackages = with pkgs; [
     hyprshot
@@ -16,6 +34,13 @@ let
     pavucontrol
   ];
 
+  lowlevelPackages = with pkgs; [
+    bluez
+    bluetui
+
+    docker-compose
+  ];
+
   # Essential system packages - cannot be excluded
   systemPackages = with pkgs; [
     git
@@ -23,7 +48,7 @@ let
     libnotify
     nautilus
     alejandra
-    bluetui
+
     clipse
     fzf
     zoxide
@@ -49,7 +74,7 @@ let
 
       # GUIs
       chromium
-      obsidian
+      #obsidian
       vlc
       signal-desktop
 
@@ -57,19 +82,19 @@ let
       github-desktop
       gh
 
-      # Containers
-      docker-compose
       ffmpeg
     ]
     ++ lib.optionals (pkgs.stdenv.hostPlatform.system == "x86_64-linux") [
-      typora
-      dropbox
-      spotify
     ];
 
   # Only allow excluding discretionary packages to prevent breaking the system
   filteredDiscretionaryPackages = lib.lists.subtractLists exclude_packages discretionaryPackages;
-  allSystemPackages = hyprlandPackages ++ systemPackages ++ filteredDiscretionaryPackages;
+  allSystemPackages =
+    hyprlandPackages
+    ++ systemPackages
+    ++ filteredDiscretionaryPackages
+    ++ customScripts
+    ++ lowlevelPackages;
 in
 {
   # Regular packages

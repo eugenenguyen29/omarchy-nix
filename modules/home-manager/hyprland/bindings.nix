@@ -1,6 +1,6 @@
 {
   config,
-  pkgs,
+  lib,
   ...
 }:
 let
@@ -8,21 +8,31 @@ let
 in
 {
   wayland.windowManager.hyprland.settings = {
+    # Default applications
+    "$terminal" = lib.mkDefault "ghostty";
+    "$fileManager" = lib.mkDefault "nautilus --new-window";
+    "$browser" = lib.mkDefault "chromium --new-window --ozone-platform=wayland";
+    "$music" = lib.mkDefault "spotify";
+    "$passwordManager" = lib.mkDefault "1password";
+    "$messenger" = lib.mkDefault "signal-desktop";
+    "$webapp" = lib.mkDefault "$browser --app";
+
+    monitor = cfg.monitors;
+
     bind =
       cfg.quick_app_bindings
       ++ cfg.kill_app_binding
       ++ [
-        "SUPER, space, exec, wofi --show drun --sort-order=alphabetical"
+        "SUPER, space, exec, walker"
         "SUPER SHIFT, SPACE, exec, pkill -SIGUSR1 waybar"
-        # "SUPER CTRL, SPACE, exec, ~/.local/share/omarchy/bin/swaybg-next"
-        # "SUPER SHIFT CTRL, SPACE, exec, ~/.local/share/omarchy/bin/omarchy-theme-next"
 
         # End active session
+        "SUPER SHIFT, Q, exec, omarchy-power-menu"
         "SUPER, ESCAPE, exec, hyprlock"
         "SUPER SHIFT, ESCAPE, exit,"
-        "SUPER CTRL, ESCAPE, exec, reboot"
-        "SUPER SHIFT CTRL, ESCAPE, exec, systemctl poweroff"
-        "SUPER, K, exec, ~/.local/share/omarchy/bin/omarchy-show-keybindings"
+        "SUPER, K, exec, omarchy-show-keybindings"
+
+        "SUPER SHIFT, P, exec, disable-apple-trackpad"
 
         # Control tiling
         "SUPER, J, layoutmsg, togglesplit"
