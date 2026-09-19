@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Power menu rendered by walker in dmenu mode.
+# Power menu rendered by wofi in dmenu mode.
 # Session actions are handed to systemd (logind), locking to hyprlock.
 
 set -euo pipefail
@@ -11,7 +11,10 @@ options="  Lock
   Reboot
   Shutdown"
 
-choice=$(printf '%s\n' "$options" | walker --dmenu --exit --theme nixos --placeholder "Power" || true)
+# -k /dev/null keeps wofi from reordering entries by usage.
+choice=$(printf '%s\n' "$options" |
+  wofi --dmenu --prompt "Power" --insensitive --no-custom-entry \
+    --lines 5 --width 300 --cache-file /dev/null || true)
 
 case "${choice##* }" in
 Lock) hyprlock ;;
