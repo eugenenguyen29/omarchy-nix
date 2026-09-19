@@ -27,15 +27,27 @@ let
     ];
   };
 
-  # A custom desktop wallpaper is used for generated themes and for any theme
-  # that overrides the wallpaper via theme_overrides.wallpaper_path.
-  usesCustomDesktopWallpaper =
-    (cfg.theme == "generated_light" || cfg.theme == "generated_dark")
-    || (cfg.theme_overrides.wallpaper_path != null);
+  usesGeneratedTheme = cfg.theme == "generated_light" || cfg.theme == "generated_dark";
 
+  # The desktop wallpaper is, in order of precedence:
+  #   1. omarchy.desktop_wallpaper           -- explicit user choice
+  #   2. omarchy.theme_overrides.wallpaper_path -- the image a generated theme
+  #      derives its colours from, which doubles as the wallpaper
+  #   3. the wallpaper shipped with the selected theme
+  # The first two are arbitrary out-of-tree paths and must be copied in.
+  customDesktopSource =
+    if cfg.desktop_wallpaper != null then
+      cfg.desktop_wallpaper
+    else if usesGeneratedTheme || cfg.theme_overrides.wallpaper_path != null then
+      cfg.theme_overrides.wallpaper_path
+    else
+      null;
+
+  # Custom wallpapers are copied in under a side-specific prefix so that a
+  # desktop and a lock image sharing a basename cannot clobber one another.
   desktopWallpaperName =
-    if usesCustomDesktopWallpaper then
-      builtins.baseNameOf cfg.theme_overrides.wallpaper_path
+    if customDesktopSource != null then
+      "desktop-${builtins.baseNameOf customDesktopSource}"
     else
       builtins.elemAt (wallpapers.${cfg.theme}) 0;
 
@@ -43,11 +55,11 @@ let
   wallpaper_path = "${wallpaperDir}/${desktopWallpaperName}";
 
   # Lock screen wallpaper: user-configured override or fall back to the desktop one.
-  usesCustomLockWallpaper = cfg.hyprlock_wallpaper != null;
+  customLockSource = cfg.hyprlock_wallpaper;
 
   lockWallpaperName =
-    if usesCustomLockWallpaper then
-      builtins.baseNameOf cfg.hyprlock_wallpaper
+    if customLockSource != null then
+      "lock-${builtins.baseNameOf customLockSource}"
     else
       desktopWallpaperName;
 
@@ -57,17 +69,17 @@ let
   # configured paths) into ~/Pictures/Wallpapers so hyprpaper/hyprlock can
   # always reference them from a single, stable, absolute location.
   customDesktopFile =
-    if usesCustomDesktopWallpaper then
+    if customDesktopSource != null then
       {
-        "Pictures/Wallpapers/${desktopWallpaperName}".source = cfg.theme_overrides.wallpaper_path;
+        "Pictures/Wallpapers/${desktopWallpaperName}".source = customDesktopSource;
       }
     else
       { };
 
   customLockFile =
-    if usesCustomLockWallpaper then
+    if customLockSource != null then
       {
-        "Pictures/Wallpapers/${lockWallpaperName}".source = cfg.hyprlock_wallpaper;
+        "Pictures/Wallpapers/${lockWallpaperName}".source = customLockSource;
       }
     else
       { };

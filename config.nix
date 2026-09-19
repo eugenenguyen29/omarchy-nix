@@ -36,10 +36,19 @@ lib: {
       default = { };
       description = "Theme overrides including wallpaper path for generated themes";
     };
+    desktop_wallpaper = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+      description = ''
+        Path to the desktop (hyprpaper) wallpaper. Takes precedence over
+        theme_overrides.wallpaper_path; falls back to the theme wallpaper when
+        neither is set.
+      '';
+    };
     hyprlock_wallpaper = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
-      description = "Path to the hyprlock wallpaper => fallback to the theme wallpaper if not specify";
+      description = "Path to the hyprlock wallpaper => fallback to the desktop wallpaper if not specified";
     };
     primary_font = lib.mkOption {
       type = lib.types.str;
@@ -62,15 +71,6 @@ lib: {
       type = lib.types.listOf lib.types.str;
       description = "A list of single keystroke key bindings to launch common apps.";
       default = [
-        "SUPER, A, exec, $webapp=https://chatgpt.com"
-        "SUPER SHIFT, A, exec, $webapp=https://grok.com"
-        "SUPER, C, exec, $webapp=https://app.hey.com/calendar/weeks/"
-        "SUPER, E, exec, $webapp=https://app.hey.com"
-        "SUPER, Y, exec, $webapp=https://youtube.com/"
-        "SUPER SHIFT, G, exec, $webapp=https://web.whatsapp.com/"
-        "SUPER, X, exec, $webapp=https://x.com/"
-        "SUPER SHIFT, X, exec, $webapp=https://x.com/compose/post"
-
         "SUPER, return, exec, $terminal"
         "SUPER, F, exec, $fileManager"
         "SUPER, B, exec, $browser"
@@ -79,7 +79,6 @@ lib: {
         "SUPER, T, exec, $terminal -e btop"
         "SUPER, D, exec, $terminal -e lazydocker"
         "SUPER, G, exec, $messenger"
-        "SUPER, O, exec, obsidian -disable-gpu"
         "SUPER, slash, exec, $passwordManager"
       ];
     };

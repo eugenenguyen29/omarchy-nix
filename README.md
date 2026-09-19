@@ -104,6 +104,27 @@ Any theme can be customized with a custom wallpaper by specifying `wallpaper_pat
 
 Generated themes automatically extract colors from the wallpaper and create a matching color scheme for all Omarchy applications (terminal, editor, launcher, etc.). 
 
+#### Desktop and Lock Screen Wallpapers
+
+The desktop (hyprpaper) and lock screen (hyprlock) wallpapers can be chosen independently:
+
+```nix
+{
+  omarchy = {
+    theme = "tokyo-night";
+    desktop_wallpaper = ./path/to/desktop.jpg;
+    hyprlock_wallpaper = ./path/to/lockscreen.jpg;
+  };
+}
+```
+
+Both are optional and fall back in this order:
+
+- `desktop_wallpaper` → `theme_overrides.wallpaper_path` → the wallpaper shipped with the selected theme
+- `hyprlock_wallpaper` → whatever the desktop wallpaper resolved to
+
+Custom images are copied into `~/Pictures/Wallpapers` (prefixed `desktop-` / `lock-`), since hyprpaper and hyprlock both require absolute paths.
+
 ## License
 
 This project is released under the MIT License, same as the original Omarchy.
