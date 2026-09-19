@@ -12,6 +12,7 @@ let
   };
 in
 {
+
   security.rtkit.enable = true;
   services.pulseaudio.enable = false;
   services.pipewire = {
@@ -23,12 +24,6 @@ in
     wireplumber.enable = true;
   };
 
-  # Initial login experience
-  services.greetd = {
-    enable = true;
-    settings.default_session.command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd start-hyprland";
-  };
-
   # Install packages
   environment.systemPackages = packages.systemPackages;
   programs.direnv.enable = true;
@@ -36,7 +31,7 @@ in
   # Networking
   services.resolved.enable = true;
   hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
+  services.blueman.enable = lib.mkDefault false;
   networking = {
     networkmanager.enable = true;
   };
@@ -47,7 +42,7 @@ in
     nerd-fonts.caskaydia-mono
   ];
 
-  powerManagement.powertop.enable = true; # enable powertop auto tuning on startup.
+  powerManagement.powertop.enable = false; # enable powertop auto tuning on startup.
 
   # Use Red Hat's tuned for system performance tuning
   services.tuned.enable = true;

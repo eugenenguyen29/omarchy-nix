@@ -34,8 +34,8 @@
     ];
 
     layerrule = [
-      # Proper background blur for wofi
       "blur on, match:namespace wofi"
+      "blur on, match:namespace walker"
       "blur on, match:namespace waybar"
     ];
   };

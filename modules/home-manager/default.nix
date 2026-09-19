@@ -39,22 +39,17 @@ in
     (import ./ghostty.nix)
     (import ./btop.nix)
     (import ./direnv.nix)
-    (import ./git.nix)
+    #(import ./git.nix)
     (import ./mako.nix)
-    (import ./starship.nix)
+    #(import ./starship.nix)
     (import ./vscode.nix)
     (import ./waybar.nix inputs)
     (import ./wofi.nix)
+    (import ./walker.nix)
     (import ./zoxide.nix)
     (import ./zsh.nix)
   ];
 
-  home.file = {
-    ".local/share/omarchy/bin" = {
-      source = ../../bin;
-      recursive = true;
-    };
-  };
   home.packages = packages.homePackages;
 
   colorScheme =
@@ -69,8 +64,6 @@ in
       name = if config.omarchy.theme == "generated_light" then "Adwaita" else "Adwaita:dark";
       package = pkgs.gnome-themes-extra;
     };
+    gtk4.theme = null;
   };
-
-  # TODO: Add an actual nvim config
-  programs.neovim.enable = true;
 }

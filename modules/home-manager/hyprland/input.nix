@@ -12,7 +12,7 @@
       kb_layout = "us";
       # kb_variant =
       # kb_model =
-      kb_options = "compose:caps";
+      kb_options = "caps:escape";
       # kb_rules =
 
       follow_mouse = 1;
