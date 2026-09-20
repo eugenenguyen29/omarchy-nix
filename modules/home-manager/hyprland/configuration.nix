@@ -1,3 +1,4 @@
+inputs:
 {
   config,
   pkgs,
@@ -12,6 +13,7 @@ in
     ./autostart.nix
     ./bindings.nix
     ./envs.nix
+    (import ./hyprmod.nix inputs)
     ./input.nix
     ./looknfeel.nix
     ./windows.nix
