@@ -293,6 +293,26 @@
         "type": "github"
       }
     },
+    "hyprmod": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787844471,
+        "narHash": "sha256-AKnBFjkZs4UGZqMT3yIkaCdpvM2fVccU1dVuK5AVZBk=",
+        "owner": "BlueManCZ",
+        "repo": "hyprmod",
+        "rev": "ffd47d804d8996cf3852dbb7ca1c949c424a57fb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BlueManCZ",
+        "repo": "hyprmod",
+        "type": "github"
+      }
+    },
     "hyprtoolkit": {
       "inputs": {
         "aquamarine": [
@@ -549,6 +569,7 @@
         "elephant": "elephant",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
+        "hyprmod": "hyprmod",
         "nix-colors": "nix-colors",
         "nixpkgs": "nixpkgs_3",
         "walker": "walker"

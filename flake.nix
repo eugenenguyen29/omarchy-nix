@@ -9,6 +9,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # GTK4 settings app for Hyprland. Not in nixpkgs yet (NixOS/nixpkgs#505419);
+    # drop this input and use pkgs.hyprmod once that lands.
+    hyprmod = {
+      url = "github:BlueManCZ/hyprmod";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     elephant.url = "github:abenz1267/elephant";
 
     walker = {

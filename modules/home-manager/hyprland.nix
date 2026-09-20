@@ -5,7 +5,7 @@ inputs:
   ...
 }:
 {
-  imports = [ ./hyprland/configuration.nix ];
+  imports = [ (import ./hyprland/configuration.nix inputs) ];
   wayland.windowManager.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
