@@ -46,6 +46,8 @@ pkgs.mkShell {
 
   packages = [
     pkgs.quickshell # `quickshell -p .` to run the shell in config/quickshell
+    pkgs.slurp
+    pkgs.wf-recorder
   ];
 
   shellHook = ''

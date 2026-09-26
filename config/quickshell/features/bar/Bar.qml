@@ -19,7 +19,21 @@ Scope {
             required property var modelData
 
             screen: bar.modelData
-            color: Theme.surface
+
+            // The window is bar + popout tall, but only the bar reserves space
+            // and only bar + open popout take input — so the desktop below is
+            // untouched and the pointer never falls through the joint between
+            // the two while sliding down.
+            color: "transparent"
+            exclusiveZone: Metrics.barHeight
+
+            mask: Region {
+                item: strip
+
+                Region {
+                    item: popout
+                }
+            }
 
             anchors {
                 top: true
@@ -27,10 +41,43 @@ Scope {
                 right: true
             }
 
-            implicitHeight: Metrics.barHeight
+            implicitHeight: Metrics.barHeight + popout.implicitHeight
 
-            Clock {
-                anchors.centerIn: parent
+            // The mask already limits input to bar + open popout, so one
+            // handler over the whole window answers "is the pointer on either
+            // of them" — and stays hovered while crossing from one to the other.
+            Item {
+                anchors.fill: parent
+
+                HoverHandler {
+                    id: hover
+                }
+
+                Rectangle {
+                    id: strip
+
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    height: Metrics.barHeight
+                    color: Theme.surface
+
+                    Clock {
+                        anchors.centerIn: parent
+
+                        popout: popout
+                    }
+                }
+
+                Popout {
+                    id: popout
+
+                    y: Metrics.barHeight
+                    open: hover.hovered && content !== null
+                }
             }
         }
     }
