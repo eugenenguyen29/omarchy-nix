@@ -35,6 +35,10 @@
     {
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-tree;
 
+      devShells.x86_64-linux.default = import ./shells/qt.nix {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      };
+
       nixosModules = {
         default =
           {

@@ -41,6 +41,7 @@ in
     (import ./direnv.nix)
     #(import ./git.nix)
     (import ./mako.nix)
+    (import ./quickshell.nix)
     #(import ./starship.nix)
     (import ./vscode.nix)
     (import ./waybar.nix inputs)
