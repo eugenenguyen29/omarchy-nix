@@ -59,8 +59,8 @@ Scope {
                     color: Theme.surface
 
                     // Sections, left to right. Each is independent: add a widget
-                    // to one, and give it a `content` component if it should
-                    // open the popout.
+                    // to one, and pass it `popout` if it should open the panel —
+                    // an item with no `popout` (or no `content`) is just text.
                     BarSection {
                         anchors.left: parent.left
                         anchors.leftMargin: Config.spacingLarge
@@ -76,7 +76,6 @@ Scope {
                         }
 
                         BarClock {
-                            popout: popout
                         }
                     }
 

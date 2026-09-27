@@ -2,12 +2,15 @@ import QtQuick
 import Quickshell
 import qs.shared.theme
 
-PopoutTrigger {
+BarItem {
     SystemClock {
         id: clock
 
         precision: SystemClock.Minutes
     }
+
+    text: Qt.formatDate(clock.date, "ddd d MMM")
+    color: Theme.textMuted
 
     content: Component {
         Text {
@@ -16,13 +19,5 @@ PopoutTrigger {
             font.family: Typography.family
             font.pixelSize: Typography.title
         }
-    }
-
-    Text {
-        text: Qt.formatDate(clock.date, "ddd d MMM")
-        color: Theme.textMuted
-        font.family: Typography.family
-        font.pixelSize: Typography.body
-        font.weight: Typography.medium
     }
 }

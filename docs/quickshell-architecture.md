@@ -43,7 +43,7 @@ config/quickshell/
     <Slice>State.qml        # pragma Singleton — slice-private state
     internal/               # sub-components, appears once there are two of them
   shared/                   # the kernel
-    theme/                  # Theme (semantic tokens), Base16, Typography, Metrics
+    theme/                  # Config (sizes, motion), Motion, Theme, Base16, Typography
     ui/                     # themed dumb components, flat until one grows helpers
     services/<x>/           # ONLY where there is real logic — see below
     util/<x>/

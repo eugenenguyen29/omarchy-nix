@@ -18,16 +18,6 @@ BarItem {
     // the wiring has earned your trust.
     readonly property string state: `${percent}% ${Audio.muted ? "muted" : "unmuted"} via ${Audio.sink?.description ?? "nothing"}`
 
-    // Without acceptedDevices this reacts to a real mouse wheel only — a laptop
-    // touchpad's two-finger scroll is filtered out before the handler sees it.
-    // angleDelta is scaled rather than thresholded, so one wheel click (120) is
-    // exactly one step while a touchpad glides in fractions of one.
-    WheelHandler {
-        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-
-        onWheel: event => Audio.setVolume(Audio.volume + event.angleDelta.y / 120 * root.step)
-    }
-
     TapHandler {
         onTapped: Audio.toggleMute()
     }
