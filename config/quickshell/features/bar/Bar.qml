@@ -25,7 +25,7 @@ Scope {
             // untouched and the pointer never falls through the joint between
             // the two while sliding down.
             color: "transparent"
-            exclusiveZone: Metrics.barHeight
+            exclusiveZone: Config.barHeight
 
             mask: Region {
                 item: strip
@@ -41,7 +41,7 @@ Scope {
                 right: true
             }
 
-            implicitHeight: Metrics.barHeight + popout.implicitHeight
+            implicitHeight: Config.barHeight + popout.implicitHeight
 
             // The mask already limits input to bar + open popout, so one
             // handler over the whole window answers "is the pointer on either
@@ -62,20 +62,60 @@ Scope {
                         right: parent.right
                     }
 
-                    height: Metrics.barHeight
+                    height: Config.barHeight
                     color: Theme.surface
 
-                    Clock {
-                        anchors.centerIn: parent
+                    // Sections, left to right. Each is independent: add a widget
+                    // to one, and give it a `content` component if it should
+                    // open the popout.
+                    BarSection {
+                        anchors.left: parent.left
+                        anchors.leftMargin: Config.spacingLarge
 
-                        popout: popout
+                        BarWorkspaces {}
+                    }
+
+                    BarSection {
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        BarDate {
+                            popout: popout
+                        }
+
+                        BarClock {
+                            popout: popout
+                        }
+                    }
+
+                    BarSection {
+                        anchors.right: parent.right
+                        anchors.rightMargin: Config.spacingLarge
+
+                        // Placeholders until the real slices land: one loose
+                        // item, then two that belong together.
+                        BarItem {
+                            icon: "󰕾"
+                            text: "64%"
+                        }
+
+                        BarGroup {
+                            BarItem {
+                                icon: "󰍛"
+                                text: "12%"
+                            }
+
+                            BarItem {
+                                icon: "󰾆"
+                                text: "7.4G"
+                            }
+                        }
                     }
                 }
 
                 Popout {
                     id: popout
 
-                    y: Metrics.barHeight
+                    y: Config.barHeight
                     open: hover.hovered && content !== null
                 }
             }

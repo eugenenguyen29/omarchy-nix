@@ -17,34 +17,30 @@ Item {
 
     // Radius of the concave fillets, which sit outside the content box on both
     // sides; the panel is therefore wider than its content by 2 * this.
-    readonly property int wing: Metrics.radiusLarge
+    readonly property int wing: Config.radiusFillet
 
-    implicitWidth: loader.implicitWidth + 2 * (wing + Metrics.spacingLarge)
-    implicitHeight: loader.implicitHeight + 2 * Metrics.spacing
+    implicitWidth: loader.implicitWidth + 2 * (wing + Config.spacingLarge)
+    implicitHeight: loader.implicitHeight + 2 * Config.spacing
 
     width: implicitWidth
     height: open ? implicitHeight : 0
     x: Math.max(0, Math.min(parent.width - width, centerX - width / 2))
 
+    // x only means anything while the panel is on screen. Ungated, the first
+    // open animates it from wherever the previous trigger left it, so the panel
+    // slides in from the side instead of growing out of the bar.
     Behavior on x {
-        NumberAnimation {
-            duration: Metrics.duration
-            easing.type: Easing.OutCubic
-        }
+        enabled: root.height > 0
+
+        Motion {}
     }
 
     Behavior on width {
-        NumberAnimation {
-            duration: Metrics.duration
-            easing.type: Easing.OutCubic
-        }
+        Motion {}
     }
 
     Behavior on height {
-        NumberAnimation {
-            duration: Metrics.duration
-            easing.type: Easing.OutCubic
-        }
+        Motion {}
     }
 
     // One path for the whole outline: the top edge spans the body plus whatever
@@ -58,7 +54,7 @@ Item {
         // Below `wing` the outline has no fillets left to show and is just a
         // wide, flat sliver — the shape of a rectangle, not of a closing panel.
         // Fading those last pixels out retires it before it reads as one.
-        opacity: Math.min(1, root.height / root.wing)
+        opacity: root.wing > 0 ? Math.min(1, root.height / root.wing) : 1
 
         ShapePath {
             id: path
@@ -73,7 +69,7 @@ Item {
             // from `r` instead would walk them out to 0 and `w`, and the close
             // would end on a full-width slab.
             readonly property real r: Math.min(root.wing, h)
-            readonly property real rb: Math.max(0, Math.min(Metrics.radiusLarge, h - r, (w - 2 * root.wing) / 2))
+            readonly property real rb: Math.max(0, Math.min(Config.radiusLarge, h - r, (w - 2 * root.wing) / 2))
 
             fillColor: Theme.surface
             strokeWidth: 0
@@ -142,19 +138,18 @@ Item {
         // Driven by `open` rather than by measured height: deriving it from
         // root.implicitHeight read this subtree's own implicit size back into
         // one of its visual properties, which Qt flags as a binding loop.
-        // Half the panel duration, and on the way in it waits out the other
-        // half, so content still arrives after the panel and leaves before it.
+        // On the way in the fade waits out half the panel's travel first, so
+        // content still arrives after the panel and leaves before it.
         opacity: root.open ? 1 : 0
 
         Behavior on opacity {
             SequentialAnimation {
                 PauseAnimation {
-                    duration: root.open ? Metrics.duration / 2 : 0
+                    duration: root.open ? Config.durationSpatial / 2 : 0
                 }
 
-                NumberAnimation {
-                    duration: Metrics.duration / 2
-                    easing.type: Easing.OutCubic
+                Motion {
+                    kind: Motion.Effects
                 }
             }
         }
@@ -163,7 +158,7 @@ Item {
             id: loader
 
             anchors.horizontalCenter: parent.horizontalCenter
-            y: Metrics.spacing
+            y: Config.spacing
 
             sourceComponent: root.content
         }

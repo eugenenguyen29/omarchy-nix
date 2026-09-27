@@ -9,6 +9,8 @@ Item {
     required property Popout popout
     property Component content: null
 
+    anchors.verticalCenter: parent.verticalCenter
+
     implicitWidth: childrenRect.width
     implicitHeight: childrenRect.height
 
