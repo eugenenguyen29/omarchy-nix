@@ -7,7 +7,9 @@ import Quickshell
 // an edit to this one file.
 Singleton {
     readonly property color surface: Base16.base00
-    readonly property color surfaceAlt: Base16.base01
+    // base01 is not reliably lighter than base00 — in tokyonight it is darker —
+    // so anything that must sit *above* the surface tints the surface itself.
+    readonly property color surfaceRaised: Qt.tint(surface, Qt.rgba(1, 1, 1, 0.08))
     readonly property color overlay: Base16.base02
 
     readonly property color text: Base16.base05

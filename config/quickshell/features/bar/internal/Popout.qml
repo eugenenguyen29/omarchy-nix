@@ -13,7 +13,19 @@ Item {
     // panel shrinks.
     property Component content: null
     property real centerX: 0
-    property bool open: false
+
+    // The trigger the pointer is on, or null. Ownership is what makes the panel
+    // belong to one item rather than to the bar: hovering a section with no
+    // trigger in it claims nothing, so nothing opens.
+    property Item owner: null
+
+    // Hovering the panel itself holds it open, so the pointer can cross from
+    // the trigger down into it without the panel closing under it.
+    readonly property bool open: root.owner !== null || hover.hovered
+
+    HoverHandler {
+        id: hover
+    }
 
     // Radius of the concave fillets, which sit outside the content box on both
     // sides; the panel is therefore wider than its content by 2 * this.

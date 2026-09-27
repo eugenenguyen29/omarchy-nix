@@ -15,7 +15,7 @@ Rectangle {
     implicitHeight: row.implicitHeight + 2 * Config.spacingSmall
 
     radius: Config.radius
-    color: Theme.surfaceAlt
+    color: Theme.surfaceRaised
 
     Row {
         id: row

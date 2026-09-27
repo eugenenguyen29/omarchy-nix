@@ -43,15 +43,8 @@ Scope {
 
             implicitHeight: Config.barHeight + popout.implicitHeight
 
-            // The mask already limits input to bar + open popout, so one
-            // handler over the whole window answers "is the pointer on either
-            // of them" — and stays hovered while crossing from one to the other.
             Item {
                 anchors.fill: parent
-
-                HoverHandler {
-                    id: hover
-                }
 
                 Rectangle {
                     id: strip
@@ -91,12 +84,9 @@ Scope {
                         anchors.right: parent.right
                         anchors.rightMargin: Config.spacingLarge
 
-                        // Placeholders until the real slices land: one loose
-                        // item, then two that belong together.
-                        BarItem {
-                            icon: "󰕾"
-                            text: "64%"
-                        }
+                        // Real item, then two placeholders that belong
+                        // together until their slices land.
+                        BarAudio {}
 
                         BarGroup {
                             BarItem {
@@ -116,7 +106,6 @@ Scope {
                     id: popout
 
                     y: Config.barHeight
-                    open: hover.hovered && content !== null
                 }
             }
         }

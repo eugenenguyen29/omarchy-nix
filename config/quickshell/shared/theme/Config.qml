@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property int barHeight: 28
+    readonly property int barHeight: 32
 
     // 4px spacing grid.
     readonly property int spacingSmall: 4
