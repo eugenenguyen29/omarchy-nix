@@ -1,0 +1,8 @@
+{
+  "enabledMcpjsonServers": [
+    "qt-docs"
+  ],
+  "enabledPlugins": {
+    "ponytail@ponytail": true
+  }
+}
