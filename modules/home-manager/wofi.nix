@@ -5,6 +5,88 @@
 }:
 {
   home.file = {
+    # Icon colors for omarchy-power-menu, sourced by the script at runtime.
+    ".config/wofi/power-colors.sh" = {
+      text = ''
+        lock_fg="#${config.colorScheme.palette.base0D}"
+        logout_fg="#${config.colorScheme.palette.base0E}"
+        suspend_fg="#${config.colorScheme.palette.base0C}"
+        reboot_fg="#${config.colorScheme.palette.base0A}"
+        shutdown_fg="#${config.colorScheme.palette.base08}"
+      '';
+    };
+
+    # Standalone theme for the power menu: compact, centered, icon-first.
+    ".config/wofi/power.css" = {
+      text = ''
+        * {
+          font-family: 'CaskaydiaMono Nerd Font', monospace;
+          font-size: 18px;
+        }
+
+        window {
+          margin: 0;
+          padding: 0;
+          border: 2px solid #${config.colorScheme.palette.base0D};
+          border-radius: 14px;
+          background-color: #${config.colorScheme.palette.base00};
+        }
+
+        #outer-box {
+          margin: 0;
+          padding: 12px;
+          border: none;
+          background-color: transparent;
+        }
+
+        #input {
+          margin: 0 0 10px 0;
+          padding: 10px 14px;
+          border: none;
+          border-radius: 10px;
+          background-color: #${config.colorScheme.palette.base01};
+          color: #${config.colorScheme.palette.base05};
+        }
+
+        #input:focus {
+          outline: none;
+          box-shadow: none;
+          border: none;
+        }
+
+        #inner-box,
+        #scroll {
+          margin: 0;
+          padding: 0;
+          border: none;
+          background-color: transparent;
+        }
+
+        #entry {
+          margin: 2px 0;
+          padding: 10px 14px;
+          border-radius: 10px;
+          background-color: transparent;
+        }
+
+        #entry:selected {
+          outline: none;
+          border: none;
+          background-color: #${config.colorScheme.palette.base02};
+        }
+
+        #text {
+          margin: 0;
+          border: none;
+          color: #${config.colorScheme.palette.base05};
+        }
+
+        #entry:selected #text {
+          color: #${config.colorScheme.palette.base07};
+        }
+      '';
+    };
+
     ".config/wofi/style.css" = {
       text = ''
         * {
