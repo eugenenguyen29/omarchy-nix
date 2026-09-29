@@ -15,6 +15,10 @@ Row {
     property Popout popout: null
     property Component content: null
 
+    // Opt-in health of whatever backs this item; see StatusDot. Groups have no
+    // such thing, which is why it lives here and not on BarGroup.
+    property int status: StatusDot.None
+
     readonly property bool opensPopout: popout !== null && content !== null
 
     anchors.verticalCenter: parent.verticalCenter
@@ -46,6 +50,12 @@ Row {
         font.family: Typography.family
         font.pixelSize: Typography.body
         visible: text !== ""
+
+        StatusDot {
+            anchors.left: parent.right
+            anchors.top: parent.top
+            status: root.status
+        }
     }
 
     Text {

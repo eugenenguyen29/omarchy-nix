@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import qs.features.bar.internal
 import qs.shared.theme
 
@@ -10,8 +11,18 @@ Scope {
 
     required property bool enabled
 
+    // Hidden destroys the windows, so the reserved space goes with them.
+    property bool shown: true
+
+    // bind = SUPER SHIFT, SPACE, global, quickshell:barToggle
+    GlobalShortcut {
+        name: "barToggle"
+        description: "Show or hide the bar"
+        onPressed: root.shown = !root.shown
+    }
+
     Variants {
-        model: root.enabled ? Quickshell.screens : []
+        model: root.enabled && root.shown ? Quickshell.screens : []
 
         PanelWindow {
             id: bar
@@ -65,7 +76,9 @@ Scope {
                         anchors.left: parent.left
                         anchors.leftMargin: Config.spacingLarge
 
-                        BarWorkspaces {}
+                        BarWorkspaces {
+                            screen: bar.modelData
+                        }
                     }
 
                     BarSection {

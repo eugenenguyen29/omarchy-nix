@@ -20,6 +20,14 @@ Singleton {
     readonly property real volume: root.sink?.audio?.volume ?? 0
     readonly property bool muted: root.sink?.audio?.muted ?? false
 
+    // False when there is no default output, or it is not bound yet — the
+    // volume above is then a placeholder 0, not a reading.
+    readonly property bool available: root.sink?.ready === true && root.sink.audio !== null
+
+    // Some application stream is actively feeding the output. A paused player
+    // keeps its link but drops out of Active.
+    readonly property bool playing: sinkLinks.linkGroups.some(group => group.target === root.sink && group.source?.isStream && group.state === PwLinkState.Active)
+
     // Turning the knob is an unmute: reaching for the volume while muted means
     // "I want to hear this", never "make silence quieter". Lives here so every
     // caller — bar, OSD, keybinding — behaves the same way.
@@ -39,5 +47,11 @@ Singleton {
     // without this every node reports a volume of 0 forever.
     PwObjectTracker {
         objects: root.sinks
+    }
+
+    PwNodeLinkTracker {
+        id: sinkLinks
+
+        node: root.sink
     }
 }

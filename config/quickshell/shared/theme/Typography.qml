@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 
 Singleton {
-    readonly property string family: "Caskaydia Mono Nerd Font"
+    readonly property string family: "CaskaydiaMono Nerd Font"
 
     // Type scale. Only the sizes the shell actually uses exist.
     readonly property int caption: 11

@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import Quickshell.Hyprland
 import qs.shared.theme
 
@@ -19,13 +20,29 @@ Row {
 
     spacing: Config.spacingSmall
 
+    // Every bar lists the same workspaces — SUPER+N is global — but each marks
+    // the one on its own monitor.
+    required property ShellScreen screen
+    readonly property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
+
+    // Special workspaces are skipped by name: a stale workspace (see above) has
+    // id -1 too, so the id cannot tell them apart. Numbered ones sort
+    // numerically so 10 lands after 9; named ones follow, alphabetically.
     readonly property var names: {
         const names = new Set();
         for (let i = 1; i <= Config.workspaceCount; i++)
             names.add(String(i));
         for (const w of Hyprland.workspaces.values)
-            names.add(w.name);
-        return Array.from(names).sort();
+            if (!w.name.startsWith("special:"))
+                names.add(w.name);
+        return Array.from(names).sort((a, b) => {
+            const x = Number(a), y = Number(b);
+            if (Number.isInteger(x) && Number.isInteger(y))
+                return x - y;
+            if (Number.isInteger(x) !== Number.isInteger(y))
+                return Number.isInteger(x) ? -1 : 1;
+            return a.localeCompare(b);
+        });
     }
 
     function workspaceFor(name: string): HyprlandWorkspace {
@@ -44,19 +61,21 @@ Row {
             required property string modelData
 
             readonly property HyprlandWorkspace workspace: root.workspaceFor(modelData)
-            readonly property bool focused: workspace?.focused ?? false
+            readonly property bool shown: workspace?.active ?? false
+            readonly property bool here: shown && workspace.monitor === root.monitor
             readonly property bool occupied: (workspace?.toplevels.values.length ?? 0) > 0
 
             anchors.verticalCenter: parent.verticalCenter
 
-            // The focused dot stretches into a pill; an empty one stays a dot
-            // and fades back, so the row reads as "where I am, what is live".
-            implicitWidth: focused ? 3 * Config.workspaceDot : Config.workspaceDot
+            // This monitor's workspace stretches into a pill; the one another
+            // monitor shows stays a dot in the accent; an empty one fades back.
+            // The row reads as "where I am, what else is on screen, what is live".
+            implicitWidth: here ? 3 * Config.workspaceDot : Config.workspaceDot
             implicitHeight: Config.workspaceDot
             radius: height / 2
 
-            color: focused ? Theme.accent : Theme.text
-            opacity: focused || dot.occupied ? 1 : 0.3
+            color: shown ? Theme.accent : Theme.text
+            opacity: shown || dot.occupied ? 1 : 0.3
 
             Behavior on implicitWidth {
                 Motion {}

@@ -16,6 +16,7 @@ Singleton {
     readonly property color textMuted: Base16.base04
 
     readonly property color accent: Base16.base0D
+    readonly property color success: Base16.base0B
     readonly property color warn: Base16.base0A
     readonly property color error: Base16.base08
 }

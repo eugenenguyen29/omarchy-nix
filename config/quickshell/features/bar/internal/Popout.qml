@@ -3,12 +3,12 @@ import QtQuick.Shapes
 import qs.shared.theme
 
 // The single panel that grows out of the bar. One instance per bar window;
-// PopoutTriggers hand it their content component and their centre on the bar,
+// BarItems hand it their content component and their centre on the bar,
 // so moving between widgets slides and resizes this rather than reopening it.
 Item {
     id: root
 
-    // Set by whichever PopoutTrigger the pointer is over. Never cleared on
+    // Set by whichever BarItem the pointer is over. Never cleared on
     // exit — keeping the last content alive is what lets it fade out while the
     // panel shrinks.
     property Component content: null
