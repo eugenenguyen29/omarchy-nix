@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import qs.features.bar
 import qs.shared.theme
 
 // SystemClock, never a bare Timer: quickshell aligns the tick to the wall clock

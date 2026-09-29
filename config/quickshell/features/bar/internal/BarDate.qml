@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import qs.features.bar
 import qs.shared.theme
 
 BarItem {

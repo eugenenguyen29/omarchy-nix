@@ -41,7 +41,8 @@ config/quickshell/
   features/<slice>/
     <Slice>.qml             # entry point, PascalCase of the directory
     <Slice>State.qml        # pragma Singleton — slice-private state
-    internal/               # sub-components, appears once there are two of them
+    <Base>.qml              # base components: shared behaviour and shape
+    internal/               # concrete components built on the bases
   shared/                   # the kernel
     theme/                  # Config (sizes, motion), Motion, Theme, Base16, Typography
     ui/                     # themed dumb components, flat until one grows helpers
@@ -63,6 +64,13 @@ in a catch-all `util/`.
 - **One entry point**, named after the directory. It is the slice's only public
   surface. Everything else in the folder is private by convention — review
   enforces it, QML cannot.
+- **Base components live next to the entry point; concrete ones in
+  `internal/`.** A component that defines behaviour and shape for others to
+  build on (a generic item, container or popup) is a base. It goes at the top
+  of the slice folder. A component that fills a base in with specific data or
+  logic goes in `internal/` and imports the slice (`import qs.features.<slice>`)
+  to get its base. Bases never import `internal/`. If a base would need
+  something from `internal/`, that thing is a base too, so move it up.
 - **Configuration arrives as properties** set by `shell.qml`. A slice never
   reads a file or an env var itself.
 - **State that must survive hot reload goes in `<Slice>State.qml`.** Singletons
@@ -164,7 +172,10 @@ waybar/wofi keep running until their replacement merges; each step ships alone.
 
 ## Review checklist
 
-- [ ] No `import qs.features.*` outside `shell.qml`, `shared/` included.
+- [ ] No `import qs.features.*` outside `shell.qml`, `shared/` included —
+      except a slice's `internal/` importing its own slice for its bases.
+- [ ] Bases at the slice top level, concrete components in `internal/`; no
+      base imports `internal/`.
 - [ ] Module imports (`qs.*`), never relative paths.
 - [ ] No `qmldir` file anywhere in the tree.
 - [ ] Slice config arrives as properties; no slice reads a file or env var.

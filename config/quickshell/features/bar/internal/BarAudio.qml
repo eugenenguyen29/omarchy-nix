@@ -1,4 +1,5 @@
 import QtQuick
+import qs.features.bar
 import qs.shared.services.audio
 
 // Output volume; click to mute. The glyph carries the level, so the row still
