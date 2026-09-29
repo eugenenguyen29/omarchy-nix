@@ -125,6 +125,18 @@ qmlformat -i config/quickshell/**/*.qml
 
 Saving reloads the running shell — leave one `qs` running while you work.
 
+The installed shell is the `quickshell` systemd user service
+(`modules/home-manager/quickshell.nix`), started with `hyprland-session.target`
+and restarted on crash. It runs the copy in `~/.config/quickshell`, which only
+changes on `home-manager switch` — so stop it while working against the tree:
+
+```
+systemctl --user stop quickshell      # before qs -p config/quickshell
+systemctl --user start quickshell     # back to the installed copy
+```
+
+`SUPER SHIFT, SPACE` shows/hides the bar (`global, quickshell:barToggle`).
+
 There is no lint gate. `qmllint` cannot resolve `qs.*` imports without per-
 directory `qmldir` files, and those break quickshell's runtime synthesis; the
 scaffolding that reconciled the two cost more than it caught. Same for `qmlls`
@@ -142,9 +154,9 @@ waybar/wofi keep running until their replacement merges; each step ships alone.
 
 | # | Slice | Replaces | Notes |
 |---|---|---|---|
-| 1 | `shared/theme` + `shell.qml` + clock-only `Bar` | — | **Done.** No `exec-once` yet; waybar still runs. |
+| 1 | `shared/theme` + `shell.qml` + clock-only `Bar` | — | **Done.** Runs as the `quickshell` systemd user service (see Workflow). |
 | 2 | `features/bar` | waybar | Largest. Port modules one at a time. |
-| 3 | `features/powermenu` | wofi + `scripts/omarchy-power-menu.sh` | First `GlobalShortcut` slice. |
+| 3 | `features/powermenu` | wofi + `scripts/omarchy-power-menu.sh` | `GlobalShortcut` toggle, like the bar's `barToggle`. |
 | 4 | `features/osd` | — | **Brightness has no quickshell service** — needs `Process`/`brightnessctl`. Not a small slice. |
 | 5 | `features/notifications` | mako | `NotificationServer` + persistence. |
 | 6 | `features/launcher` | walker/wofi | Optional; walker is competitive. |

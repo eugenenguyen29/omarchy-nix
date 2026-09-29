@@ -24,7 +24,8 @@ in
       ++ cfg.kill_app_binding
       ++ [
         "SUPER, space, exec, walker"
-        "SUPER SHIFT, SPACE, exec, pkill -SIGUSR1 waybar"
+        # Show/hide the bar; handled by the GlobalShortcut in features/bar/Bar.qml.
+        "SUPER SHIFT, SPACE, global, quickshell:barToggle"
 
         # End active session
         "SUPER SHIFT, Q, exec, omarchy-power-menu"

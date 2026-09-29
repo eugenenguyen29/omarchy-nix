@@ -43,5 +43,13 @@ in
     );
   };
 
-  home.packages = [ pkgs.quickshell ];
+  # Runs `quickshell` with no -p, which loads ~/.config/quickshell/shell.qml;
+  # systemd restarts it if it crashes.
+  programs.quickshell = {
+    enable = true;
+    systemd = {
+      enable = true;
+      target = "hyprland-session.target";
+    };
+  };
 }
