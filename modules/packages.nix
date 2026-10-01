@@ -81,6 +81,7 @@ let
       # Development tools
       github-desktop
       gh
+      nodejs # Claude Code plugin hooks (ponytail) + npx for MCP servers (context7)
 
       ffmpeg
     ]

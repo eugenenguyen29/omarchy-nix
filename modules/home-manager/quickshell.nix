@@ -52,4 +52,9 @@ in
       target = "hyprland-session.target";
     };
   };
+
+  # home-manager only restarts units whose unit file changed, and quickshell's
+  # file watcher can't follow the symlinks swapping to a new store path. Baking
+  # the config's store path into the unit makes every config change restart it.
+  systemd.user.services.quickshell.Unit.X-Restart-Triggers = [ "${../../config/quickshell}" ];
 }
