@@ -13,4 +13,6 @@
   # without one it forgets the sign-in on every reboot.
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.greetd.enableGnomeKeyring = true;
+  # Keyring only; SSH keys come from the 1Password agent.
+  services.gnome.gcr-ssh-agent.enable = false;
 }
