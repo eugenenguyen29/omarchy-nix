@@ -31,6 +31,8 @@
       "float on, match:class clipse"
       "size 622 652, match:class clipse"
       "stay_focused on, match:class clipse"
+      # 1Password approval prompts overflow on long /nix/store paths
+      "min_size 700 800, match:class ^(1Password)$, match:float 1"
     ];
 
     layerrule = [
