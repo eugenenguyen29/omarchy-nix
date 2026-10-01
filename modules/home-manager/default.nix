@@ -36,6 +36,7 @@ in
     (import ./hyprlock.nix inputs)
     (import ./hyprpaper.nix)
     (import ./hypridle.nix)
+    ./lid
     (import ./ghostty.nix)
     (import ./btop.nix)
     (import ./direnv.nix)
