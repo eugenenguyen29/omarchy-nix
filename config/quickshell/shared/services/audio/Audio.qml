@@ -26,7 +26,14 @@ Singleton {
 
     // Some application stream is actively feeding the output. A paused player
     // keeps its link but drops out of Active.
-    readonly property bool playing: sinkLinks.linkGroups.some(group => group.target === root.sink && group.source?.isStream && group.state === PwLinkState.Active)
+    readonly property bool playing: sinkLinks.linkGroups.some(group => group.source?.isStream && group.state === PwLinkState.Active)
+
+    // Input side. With the T2 DSP the default source is the filter-chain
+    // output, so its own always-linked capture stream never counts — only
+    // applications recording from the default source do.
+    readonly property PwNode source: Pipewire.defaultAudioSource
+    readonly property bool sourceAvailable: root.source?.ready === true
+    readonly property bool recording: sourceLinks.linkGroups.some(group => group.target?.isStream && group.state === PwLinkState.Active)
 
     // Turning the knob is an unmute: reaching for the volume while muted means
     // "I want to hear this", never "make silence quieter". Lives here so every
@@ -45,13 +52,20 @@ Singleton {
 
     // PipeWire sends property updates only for objects something has bound;
     // without this every node reports a volume of 0 forever.
+    // Link state is likewise invalid until the link group is bound.
     PwObjectTracker {
-        objects: root.sinks
+        objects: [...root.sinks, root.source, ...sinkLinks.linkGroups, ...sourceLinks.linkGroups].filter(object => object)
     }
 
     PwNodeLinkTracker {
         id: sinkLinks
 
         node: root.sink
+    }
+
+    PwNodeLinkTracker {
+        id: sourceLinks
+
+        node: root.source
     }
 }

@@ -36,5 +36,46 @@ Rectangle {
         color: root.inUse ? Theme.surface : root.available ? Theme.textMuted : Theme.error
         font.family: Typography.family
         font.pixelSize: Typography.body
+
+        // Same health pill as BarItem, derived from the tracking contract so
+        // concrete indicators never set it themselves.
+        StatusDot {
+            anchors.left: parent.right
+            anchors.top: parent.top
+            status: !root.available ? StatusDot.Error : root.inUse ? StatusDot.Active : StatusDot.Ready
+
+            // The lit pill is already success-coloured, so an Active dot would
+            // vanish into it: take the glyph's colour and pulse instead.
+            // Binding restores StatusDot's own colour once capture stops.
+            Binding on color {
+                when: root.inUse
+                value: Theme.surface
+            }
+
+            // alwaysRunToEnd lands the cycle back on full opacity when stopped.
+            SequentialAnimation on opacity {
+                running: root.inUse
+                loops: Animation.Infinite
+                alwaysRunToEnd: true
+
+                Motion {
+                    kind: Motion.Effects
+                    to: 0
+                }
+
+                PauseAnimation {
+                    duration: Config.durationSpatial
+                }
+
+                Motion {
+                    kind: Motion.Effects
+                    to: 1
+                }
+
+                PauseAnimation {
+                    duration: Config.durationSpatial
+                }
+            }
+        }
     }
 }
