@@ -67,6 +67,34 @@ lib: {
       default = 2;
       description = "Display scale factor (1 for 1x displays, 2 for 2x displays)";
     };
+    # Interface only: what should happen when the lid closes. Each backend in
+    # modules/home-manager/lid/ implements it behind `backend`, so a new
+    # compositor or tool means a new file there plus a new enum value.
+    lid = {
+      enable = lib.mkEnableOption "turning the internal panel off while the lid is closed and an external monitor is connected";
+      backend = lib.mkOption {
+        type = lib.types.enum [ "hyprland" ];
+        default = "hyprland";
+        description = "Implementation that handles the lid switch.";
+      };
+      internal_monitor = lib.mkOption {
+        type = lib.types.str;
+        default = "eDP-1";
+        description = "Output name of the built-in panel.";
+      };
+      exclusive_monitors = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        example = [ "BNQ BenQ GW2480" ];
+        description = ''
+          External outputs that cannot run alongside the panel (e.g. too little
+          Thunderbolt bandwidth): turned off before the panel comes back on lid
+          open, and back on after it goes dark on lid close. Each entry matches an
+          output name or the start of its description, which survives the dock
+          renumbering DP-n.
+        '';
+      };
+    };
     quick_app_bindings = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       description = "A list of single keystroke key bindings to launch common apps.";

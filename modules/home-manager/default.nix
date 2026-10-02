@@ -36,14 +36,18 @@ in
     (import ./hyprlock.nix inputs)
     (import ./hyprpaper.nix)
     (import ./hypridle.nix)
+    ./lid
     (import ./ghostty.nix)
     (import ./btop.nix)
     (import ./direnv.nix)
     #(import ./git.nix)
     (import ./mako.nix)
+    (import ./quickshell.nix)
     #(import ./starship.nix)
     (import ./vscode.nix)
-    (import ./waybar.nix inputs)
+    # Replaced by ./quickshell.nix; kept around as a reference while the
+    # remaining waybar modules get ported (battery, network, bluetooth, tray).
+    #(import ./waybar.nix inputs)
     (import ./wofi.nix)
     (import ./walker.nix)
     (import ./zoxide.nix)

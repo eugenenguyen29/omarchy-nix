@@ -13,8 +13,6 @@
       "systemctl --user start hyprpolkitagent"
       "wl-clip-persist --clipboard regular & clipse -listen"
 
-      "pkill -SIGUSR2 waybar || waybar"
-
       "hyprpaper"
     ];
   };

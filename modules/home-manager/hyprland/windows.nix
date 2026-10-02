@@ -30,13 +30,11 @@
       # Float in the middle for clipse clipboard manager
       "float on, match:class clipse"
       "size 622 652, match:class clipse"
-      "stay_focused on, match:class clipse"
-    ];
+      "stay_focused on, match:class clipse"    ];
 
     layerrule = [
       "blur on, match:namespace wofi"
       "blur on, match:namespace walker"
-      "blur on, match:namespace waybar"
     ];
   };
 }

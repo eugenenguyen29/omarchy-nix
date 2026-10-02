@@ -28,6 +28,14 @@ in
   environment.systemPackages = packages.systemPackages;
   programs.direnv.enable = true;
 
+  # btop reads Intel GPU utilization from the i915 PMU, which needs CAP_PERFMON
+  security.wrappers.btop = {
+    owner = "root";
+    group = "root";
+    capabilities = "cap_perfmon+ep";
+    source = "${pkgs.btop}/bin/btop";
+  };
+
   # Networking
   services.resolved.enable = true;
   hardware.bluetooth.enable = true;

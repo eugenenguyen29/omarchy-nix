@@ -50,6 +50,11 @@ in
       # GTK theme
       "GTK_THEME,${if cfg.theme == "generated_light" then "Adwaita" else "Adwaita:dark"}"
 
+      # Explicit (tiled) modifiers cost extra display-buffer blocks on Intel
+      # gen9: with a 4K external attached, re-enabling eDP-1 (lid open) falls
+      # one DDB block short and the kernel rejects the modeset (EINVAL).
+      "AQ_NO_MODIFIERS,1"
+
       # Podman compatibility. Probably need to add cfg.env?
       # "DOCKER_HOST,unix://$XDG_RUNTIME_DIR/podman/podman.sock"
     ];
