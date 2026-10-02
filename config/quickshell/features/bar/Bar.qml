@@ -11,6 +11,10 @@ Scope {
 
     required property bool enabled
 
+    // Privacy pills (microphone): true keeps them as a dimmed glyph when idle,
+    // false shows them only while in use.
+    property bool privacyAlwaysShown: true
+
     // Hidden destroys the windows, so the reserved space goes with them.
     property bool shown: true
 
@@ -96,11 +100,16 @@ Scope {
                         anchors.right: parent.right
                         anchors.rightMargin: Config.spacingLarge
 
-                        // Real item, then two placeholders that belong
-                        // together until their slices land.
-                        BarAudio {}
+                        // Privacy pills stand alone — never inside a BarGroup.
+                        BarMicrophone {
+                            alwaysShown: root.privacyAlwaysShown
+                        }
 
+                        // Real item, then two placeholders until their
+                        // slices land.
                         BarGroup {
+                            BarAudio {}
+
                             BarItem {
                                 icon: "󰍛"
                                 text: "12%"

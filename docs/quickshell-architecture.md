@@ -91,6 +91,17 @@ in a catch-all `util/`.
   `qs ipc call` spawns a process per keypress. Pair menus with
   `HyprlandFocusGrab` so click-outside dismisses.
 
+## Privacy indicators
+
+A privacy indicator (microphone, camera — anything capturing the user) is its
+own kind of bar item, not a `BarItem` variant:
+
+- **The base owns the look; concrete items own only the tracking.** A concrete
+  indicator answers "is it in use" and "is there a device" and nothing else.
+- **Never inside a `BarGroup`.** It must stand alone to be noticed.
+- **Visibility is configuration:** always shown, or only while in use. It
+  arrives as a slice property like any other config.
+
 Adding a feature: create the directory, add one line to `shell.qml`. Reading
 `shell.qml` must tell you every feature the shell has and nothing else.
 
