@@ -74,7 +74,7 @@ let
 
       # GUIs
       chromium
-      #obsidian
+      obsidian
       vlc
       signal-desktop
 
