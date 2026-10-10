@@ -11,7 +11,7 @@ Scope {
 
     required property bool enabled
 
-    // Privacy pills (microphone): true keeps them as a dimmed glyph when idle,
+    // Privacy pills (camera, microphone): true keeps them as a dimmed glyph when idle,
     // false shows them only while in use.
     property bool privacyAlwaysShown: true
 
@@ -101,6 +101,10 @@ Scope {
                         anchors.rightMargin: Config.spacingLarge
 
                         // Privacy pills stand alone — never inside a BarGroup.
+                        BarCamera {
+                            alwaysShown: root.privacyAlwaysShown
+                        }
+
                         BarMicrophone {
                             alwaysShown: root.privacyAlwaysShown
                         }

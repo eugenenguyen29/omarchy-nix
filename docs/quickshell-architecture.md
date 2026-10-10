@@ -47,7 +47,6 @@ config/quickshell/
     theme/                  # Config (sizes, motion), Motion, Theme, Base16, Typography
     ui/                     # themed dumb components, flat until one grows helpers
     services/<x>/           # ONLY where there is real logic — see below
-    util/<x>/
 ```
 
 Only two folder kinds: `features/` and `shared/`. No `components/`, `widgets/`,
@@ -82,14 +81,17 @@ in a catch-all `util/`.
   joins the reload graph.
 - **Every file imports `QtQuick` explicitly.** `import Quickshell` alone gives no
   value types, and `property color` then fails with `color is not a type`.
-- **Popups are `PopupWindow` anchored to an item**, never a second
-  `PanelWindow`. A hand-placed second panel takes exclusion zones and breaks on
-  multi-monitor.
-- **Keybindings use `GlobalShortcut`**, declared in the slice:
-  `bind = SUPER, Escape, global, quickshell:powermenuToggle` in
-  `hyprland/bindings.nix`. `IpcHandler` is for scripts and debugging only — a
-  `qs ipc call` spawns a process per keypress. Pair menus with
-  `HyprlandFocusGrab` so click-outside dismisses.
+- **Popups never get a second `PanelWindow`.** Grow them inside the owning
+  window (masked so the empty area passes clicks through) or use a
+  `PopupWindow` anchored to an item. A hand-placed second panel takes exclusion
+  zones and breaks on multi-monitor.
+- **Keybindings use `GlobalShortcut`**, declared in the slice and bound in
+  `hyprland/bindings.nix` as `global, quickshell:<name>`. `IpcHandler` is for
+  scripts and debugging only — a `qs ipc call` spawns a process per keypress.
+  Pair menus with `HyprlandFocusGrab` so click-outside dismisses.
+
+Adding a feature: create the directory, add one line to `shell.qml`. Reading
+`shell.qml` must tell you every feature the shell has and nothing else.
 
 ## Privacy indicators
 
@@ -101,9 +103,6 @@ own kind of bar item, not a `BarItem` variant:
 - **Never inside a `BarGroup`.** It must stand alone to be noticed.
 - **Visibility is configuration:** always shown, or only while in use. It
   arrives as a slice property like any other config.
-
-Adding a feature: create the directory, add one line to `shell.qml`. Reading
-`shell.qml` must tell you every feature the shell has and nothing else.
 
 ## Shared kernel rules
 
@@ -129,8 +128,8 @@ Adding a feature: create the directory, add one line to `shell.qml`. Reading
 Always `import qs.shared.theme` — never relative `../../shared/theme`.
 
 Resolution is **per directory, not per unit**: siblings need no import
-(`Bar.qml` sees `BarState.qml` for free), but `internal/` is a different module,
-so `Bar.qml` needs `import qs.features.bar.internal`. A slice importing its own
+(`<Slice>.qml` sees `<Slice>State.qml` for free), but `internal/` is a different
+module, so the entry point needs `import qs.features.<slice>.internal`. A slice importing its own
 `internal/` is fine; the ban is on importing *other* slices.
 
 ## Workflow
@@ -154,8 +153,6 @@ systemctl --user stop quickshell      # before qs -p config/quickshell
 systemctl --user start quickshell     # back to the installed copy
 ```
 
-`SUPER SHIFT, SPACE` shows/hides the bar (`global, quickshell:barToggle`).
-
 There is no lint gate. `qmllint` cannot resolve `qs.*` imports without per-
 directory `qmldir` files, and those break quickshell's runtime synthesis; the
 scaffolding that reconciled the two cost more than it caught. Same for `qmlls`
@@ -173,13 +170,12 @@ waybar/wofi keep running until their replacement merges; each step ships alone.
 
 | # | Slice | Replaces | Notes |
 |---|---|---|---|
-| 1 | `shared/theme` + `shell.qml` + clock-only `Bar` | — | **Done.** Runs as the `quickshell` systemd user service (see Workflow). |
-| 2 | `features/bar` | waybar | Largest. Port modules one at a time. |
-| 3 | `features/powermenu` | wofi + `scripts/omarchy-power-menu.sh` | `GlobalShortcut` toggle, like the bar's `barToggle`. |
-| 4 | `features/osd` | — | **Brightness has no quickshell service** — needs `Process`/`brightnessctl`. Not a small slice. |
-| 5 | `features/notifications` | mako | `NotificationServer` + persistence. |
-| 6 | `features/launcher` | walker/wofi | Optional; walker is competitive. |
-| 7 | `features/lock` | hyprlock | `WlSessionLock` + `PamContext`. Highest risk — keep hyprlock installed and a TTY reachable. |
+| 1 | `features/bar` | waybar | Port modules one at a time. |
+| 2 | `features/powermenu` | wofi + `scripts/omarchy-power-menu.sh` | |
+| 3 | `features/osd` | — | |
+| 4 | `features/notifications` | mako | |
+| 5 | `features/launcher` | walker/wofi | Optional; walker is competitive. |
+| 6 | `features/lock` | hyprlock | Highest risk — keep hyprlock installed and a TTY reachable. |
 
 ## Review checklist
 
@@ -196,7 +192,7 @@ waybar/wofi keep running until their replacement merges; each step ships alone.
 - [ ] Quickshell `Singleton` root; `QtQuick` imported in every file.
 - [ ] New shared singleton name doesn't collide with a QtQuick type.
 - [ ] Reload-surviving state is in a singleton, not on a window.
-- [ ] Popups are `PopupWindow`; keybindings are `GlobalShortcut`.
+- [ ] No second `PanelWindow` for a popup; keybindings are `GlobalShortcut`.
 - [ ] The slice's `dev-<slice>.qml` runs against a tree with **no**
       `~/.config/omarchy/palette.json` — fallback palette, only `FileView`'s own
       "File does not exist" notice.

@@ -110,12 +110,14 @@ in
       ", switch:off:Lid Switch, exec, ${lib.getExe lidOpen}"
     ];
 
-    # A reload re-applies the panel's monitor rule and lights it under a closed
-    # lid -- HyprMod reloads on every launch and save, home-manager on every
-    # switch. `exec` (unlike exec-once) re-runs after each reload, and at login,
-    # which also covers starting the session already docked with the lid shut.
+    # A reload re-applies hyprland-gui.conf wholesale, which disagrees with the
+    # lid either way: the panel's rule lights it under a closed lid, and a
+    # `disable` HyprMod saved while the lid was shut (plus the exclusive monitor's
+    # rule) blanks it under an open one. HyprMod reloads on every launch and
+    # save, home-manager on every switch. `exec` (unlike exec-once) re-runs after
+    # each reload, and at login, so the lid's actual state is re-asserted each time.
     wayland.windowManager.hyprland.settings.exec = [
-      "${lib.getExe' pkgs.gnugrep "grep"} -qs closed /proc/acpi/button/lid/*/state && ${lib.getExe lidClose}"
+      "if ${lib.getExe' pkgs.gnugrep "grep"} -qs closed /proc/acpi/button/lid/*/state; then ${lib.getExe lidClose}; else ${lib.getExe lidOpen}; fi"
     ];
   };
 }
