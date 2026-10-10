@@ -8,7 +8,7 @@ import qs.shared.services.audio
 // ponytail: level meters (pavucontrol) open a capture stream too and light the
 // pill; filter by stream name if that gets noisy.
 PrivacyItem {
-    icon: available ? "󰍬" : "󰍭"
+    icon: available ? "mic" : "mic_off"
     available: Audio.sourceAvailable
     inUse: Audio.recording
 }

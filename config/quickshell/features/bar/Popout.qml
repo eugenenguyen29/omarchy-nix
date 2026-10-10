@@ -1,11 +1,14 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material as M
 import QtQuick.Shapes
 import qs.shared.theme
 
 // The single panel that grows out of the bar. One instance per bar window;
 // BarItems hand it their content component and their centre on the bar,
 // so moving between widgets slides and resizes this rather than reopening it.
-Item {
+// A Pane, not a Popup: a Popup opens and closes as a unit, losing the morph.
+Pane {
     id: root
 
     // Set by whichever BarItem the pointer is over. Never cleared on
@@ -21,18 +24,19 @@ Item {
 
     // Hovering the panel itself holds it open, so the pointer can cross from
     // the trigger down into it without the panel closing under it.
-    readonly property bool open: root.owner !== null || hover.hovered
+    readonly property bool open: root.owner !== null || root.hovered
 
-    HoverHandler {
-        id: hover
-    }
+    hoverEnabled: true
 
     // Radius of the concave fillets, which sit outside the content box on both
     // sides; the panel is therefore wider than its content by 2 * this.
     readonly property int wing: Config.radiusFillet
 
-    implicitWidth: loader.implicitWidth + 2 * (wing + Config.spacingLarge)
-    implicitHeight: loader.implicitHeight + 2 * Config.spacing
+    horizontalPadding: wing + Config.spacingLarge
+    verticalPadding: Config.spacing
+
+    // Same colour as the bar it grows out of.
+    readonly property color fill: M.Material.background
 
     width: implicitWidth
     height: open ? implicitHeight : 0
@@ -59,8 +63,10 @@ Item {
     // width the fillets currently claim, and two counterclockwise arcs fall
     // inward to the body edges, which is what reads as an inverted corner. Two
     // separate corner items would show a seam as they animate.
-    Shape {
-        anchors.fill: parent
+    // No implicit size, so the panel's size never feeds back into itself.
+    background: Shape {
+        implicitWidth: 0
+        implicitHeight: 0
         preferredRendererType: Shape.CurveRenderer
 
         // Below `wing` the outline has no fillets left to show and is just a
@@ -83,7 +89,7 @@ Item {
             readonly property real r: Math.min(root.wing, h)
             readonly property real rb: Math.max(0, Math.min(Config.radiusLarge, h - r, (w - 2 * root.wing) / 2))
 
-            fillColor: Theme.surface
+            fillColor: root.fill
             strokeWidth: 0
 
             startX: root.wing - path.r
@@ -141,10 +147,9 @@ Item {
         }
     }
 
-    Item {
-        x: root.wing
-        width: root.width - 2 * root.wing
-        height: root.height
+    contentItem: Item {
+        implicitWidth: loader.implicitWidth
+        implicitHeight: loader.implicitHeight
         clip: true
 
         // Driven by `open` rather than by measured height: deriving it from
@@ -170,7 +175,6 @@ Item {
             id: loader
 
             anchors.horizontalCenter: parent.horizontalCenter
-            y: Config.spacing
 
             sourceComponent: root.content
         }

@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material as M
 import Quickshell
 import Quickshell.Hyprland
 import qs.shared.theme
@@ -55,7 +57,9 @@ Row {
     Repeater {
         model: root.names
 
-        Rectangle {
+        // A button for pressed/hovered states and onClicked; the bare template
+        // has no size of its own, so the dot drawn as its background sets it.
+        AbstractButton {
             id: dot
 
             required property string modelData
@@ -67,28 +71,33 @@ Row {
 
             anchors.verticalCenter: parent.verticalCenter
 
+            implicitWidth: implicitBackgroundWidth
+            implicitHeight: implicitBackgroundHeight
+            focusPolicy: Qt.NoFocus
+            hoverEnabled: true
+
+            onClicked: Hyprland.dispatch(`workspace ${dot.modelData}`)
+
             // This monitor's workspace stretches into a pill; the one another
             // monitor shows stays a dot in the accent; an empty one fades back.
             // The row reads as "where I am, what else is on screen, what is live".
-            implicitWidth: here ? 3 * Config.workspaceDot : Config.workspaceDot
-            implicitHeight: Config.workspaceDot
-            radius: height / 2
+            background: Rectangle {
+                implicitWidth: dot.here ? 3 * Config.workspaceDot : Config.workspaceDot
+                implicitHeight: Config.workspaceDot
+                radius: height / 2
 
-            color: shown ? Theme.accent : Theme.text
-            opacity: shown || dot.occupied ? 1 : 0.3
+                color: dot.shown ? M.Material.accent : M.Material.foreground
+                opacity: dot.pressed ? 0.6 : dot.shown || dot.occupied ? 1 : dot.hovered ? 0.6 : 0.3
 
-            Behavior on implicitWidth {
-                Motion {}
-            }
-
-            Behavior on opacity {
-                Motion {
-                    kind: Motion.Effects
+                Behavior on implicitWidth {
+                    Motion {}
                 }
-            }
 
-            TapHandler {
-                onTapped: Hyprland.dispatch(`workspace ${dot.modelData}`)
+                Behavior on opacity {
+                    Motion {
+                        kind: Motion.Effects
+                    }
+                }
             }
         }
     }

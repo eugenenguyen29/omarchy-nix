@@ -13,6 +13,10 @@ Singleton {
 
     readonly property int radius: 6
 
+    // Quick-settings level sliders: thick enough to read as a pill, with a
+    // glyph inside the fill.
+    readonly property int sliderHeight: 40
+
     // Workspaces always drawn, even while empty — matches the persistent set
     // waybar shows. Live workspaces above this number appear on top.
     readonly property int workspaceCount: 5

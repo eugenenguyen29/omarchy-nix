@@ -1,0 +1,9 @@
+{
+  "theme": { "dark": true, "accent": "Teal" },
+  "bar": {
+    "showWorkspaces": true, "showDate": true, "showClock": true,
+    "showAudio": true, "showNetwork": true, "showPowerProfile": true,
+    "showCpu": true, "showMemory": true, "showCamera": true, "showMicrophone": true,
+    "privacyAlwaysShown": true
+  }
+}
