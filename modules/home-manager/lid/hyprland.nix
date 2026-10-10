@@ -28,6 +28,9 @@ let
   # duplicated here -- a copy would silently rot the next time the GUI writes it.
   # A `disable` rule is skipped: it is what the GUI leaves behind for an output
   # turned off by hand, and re-applying it is the opposite of restoring it.
+  # When HyprMod has no usable rule (the panel's is `disable` after a save under a
+  # closed lid, or the dock renumbered DP-n), the nix-declared `omarchy.monitors`
+  # entry matching the output's description (or name) is used instead.
   #
   # No `hyprctl reload` anywhere: it re-applies that file wholesale, which would
   # switch the exclusive monitor straight back on (and the panel off). Reloads
@@ -35,6 +38,7 @@ let
   common = ''
     hyprctl="${hyprctl}"
     exclusive=(${exclusive})
+    monitors=(${lib.escapeShellArgs config.omarchy.monitors})
 
     # Names of connected outputs matching any argument, by name or description prefix.
     outputs() {
@@ -45,8 +49,14 @@ let
     }
 
     rule() {
-      grep -h "^monitor *= *$1 *," "$HOME/.config/hypr/hyprland-gui.conf" 2>/dev/null \
-        | grep -v ', *disable *$' | tail -1 | sed 's/^monitor *= *//' || true
+      local r d m
+      r=$(grep -h "^monitor *= *$1 *," "$HOME/.config/hypr/hyprland-gui.conf" 2>/dev/null \
+        | grep -v ', *disable *$' | tail -1 | sed 's/^monitor *= *//' || true)
+      [ -n "$r" ] && { echo "$r"; return; }
+      d=$("$hyprctl" -j monitors all | jq -r --arg n "$1" '.[] | select(.name == $n) | .description')
+      for m in "''${monitors[@]}"; do
+        if [[ "''${m%%,*}" == "desc:$d" || "''${m%%,*}" == "$1" ]]; then echo "$m"; return; fi
+      done
     }
 
     # `keyword monitor` only queues the change for Hyprland's next tick, so the
