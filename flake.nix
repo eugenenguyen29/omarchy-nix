@@ -67,7 +67,6 @@
           }:
           {
             imports = [
-              (import ./modules/nixos/t2-dsp.nix)
               (import ./modules/nixos/default.nix inputs)
             ];
 

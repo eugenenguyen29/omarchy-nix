@@ -2,7 +2,7 @@
 
 This is a personal fork of [henrysipp/omarchy-nix](https://github.com/henrysipp/omarchy-nix), a NixOS flake that reimplements [DHH's Omarchy](https://github.com/basecamp/omarchy), an opinionated Hyprland setup, as NixOS and home-manager modules.
 
-The fork tracks one machine. It follows `nixos-unstable`, pins Hyprland to `v0.56.0`, and is hardware-specific in places: among other things, the NixOS module turns on the T2 Mac audio DSP for a MacBookPro15,4 unconditionally (see [Hardware assumptions](#hardware-assumptions)). Treat it as a reference or a starting point for your own config, not as a general-purpose distribution.
+The fork tracks one machine. It follows `nixos-unstable`, pins Hyprland to `v0.56.0`, and is hardware-specific in places (see [Hardware assumptions](#hardware-assumptions)). Treat it as a reference or a starting point for your own config, not as a general-purpose distribution.
 
 ## Direction
 
@@ -23,7 +23,6 @@ New in the fork:
 - `modules/home-manager/lid/`: turns the internal panel off while the lid is closed and an external monitor is connected (`omarchy.lid.*`).
 - `modules/home-manager/hyprland/hyprmod.nix`: installs [HyprMod](https://github.com/BlueManCZ/hyprmod), a GUI settings app for Hyprland. It writes `~/.config/hypr/hyprland-gui.conf`, which is sourced last in `hyprland.conf` so its settings take precedence over the ones declared in Nix.
 - `modules/home-manager/walker.nix`: the walker launcher, bound to `SUPER + space`.
-- `modules/nixos/t2-dsp.nix`: speaker and microphone DSP for T2 Macs.
 - `scripts/omarchy-power-menu.sh`: a wofi power menu on `SUPER + SHIFT + Q`.
 - The `desktop_wallpaper` and `hyprlock_wallpaper` options.
 
@@ -97,21 +96,13 @@ Importing `nixosModules.default` applies all of this, with no option to turn par
 
 These are applied unconditionally and assume the machine the fork runs on:
 
-- T2 audio DSP with `model = "15_4"`, a MacBookPro15,4 (`modules/nixos/default.nix`).
 - `AQ_NO_MODIFIERS,1`, a workaround for Intel gen9 graphics (`modules/home-manager/hyprland/envs.nix`).
 - The backlight device is hardcoded as `acpi_video0` (`modules/home-manager/hyprland/bindings.nix`, `modules/home-manager/hypridle.nix`, `config/quickshell/features/bar/internal/ControlCenter.qml`).
 - `SUPER + SHIFT + P` runs `disable-apple-trackpad`, which targets the Apple internal trackpad (`modules/home-manager/hyprland/bindings.nix`).
 - hyprlock has fingerprint authentication enabled (`modules/home-manager/hyprlock.nix`).
 - btop is wrapped with `cap_perfmon` to read Intel GPU usage from the i915 PMU (`modules/nixos/system.nix`).
 
-The DSP can be turned off from your own configuration; the others need an edit or an override of the Hyprland settings.
-
-```nix
-{ lib, ... }:
-{
-  t2AppleAudioDSP.enable = lib.mkForce false;
-}
-```
+None of these has an option to turn it off; changing one needs an edit or an override of the Hyprland settings.
 
 ## Configuration options
 
@@ -261,4 +252,4 @@ systemctl --user start quickshell     # back to the installed copy
 
 ## License
 
-The upstream project describes itself as released under the MIT License, same as the original Omarchy. This repository does not ship a LICENSE file of its own. `modules/nixos/t2-dsp.nix` carries its own MIT notice from the Asahi Linux contributors.
+The upstream project describes itself as released under the MIT License, same as the original Omarchy. This repository does not ship a LICENSE file of its own.
