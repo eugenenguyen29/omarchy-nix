@@ -26,7 +26,6 @@ in
 
   # Install packages
   environment.systemPackages = packages.systemPackages;
-  programs.direnv.enable = true;
 
   # btop reads Intel GPU utilization from the i915 PMU, which needs CAP_PERFMON
   security.wrappers.btop = {
@@ -48,6 +47,7 @@ in
     noto-fonts
     noto-fonts-color-emoji
     nerd-fonts.caskaydia-mono
+    material-symbols # Google's icon font: the shell's glyphs
   ];
 
   powerManagement.powertop.enable = false; # enable powertop auto tuning on startup.

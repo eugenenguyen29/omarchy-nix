@@ -1,22 +1,24 @@
 pragma Singleton
 
 import QtQuick
+import QtQuick.Controls.Material as M
 import Quickshell
+import qs.shared.config
 
-// Semantic tokens. Slices import this and never Base16 — a theme change is then
-// an edit to this one file.
+// Material choices, not colours: Surface applies them, everything else reads
+// the Material attached colours. Plumbing the Nix palette back in only touches
+// this file.
 Singleton {
-    readonly property color surface: Base16.base00
-    // base01 is not reliably lighter than base00 — in tokyonight it is darker —
-    // so anything that must sit *above* the surface tints the surface itself.
-    readonly property color surfaceRaised: Qt.tint(surface, Qt.rgba(1, 1, 1, 0.08))
-    readonly property color overlay: Base16.base02
+    readonly property int theme: ShellConfig.theme.dark ? M.Material.Dark : M.Material.Light
 
-    readonly property color text: Base16.base05
-    readonly property color textMuted: Base16.base04
+    // A name of a Material predefined colour, looked up as an enum. Never hand
+    // the JSON string to Material.accent: it parses as a CSS colour, and "Teal"
+    // is #008080, not Material Teal.
+    readonly property int accent: M.Material[ShellConfig.theme.accent] ?? M.Material.Pink
 
-    readonly property color accent: Base16.base0D
-    readonly property color success: Base16.base0B
-    readonly property color warn: Base16.base0A
-    readonly property color error: Base16.base08
+    // Status colours at the shade Material uses for the active theme.
+    readonly property int shade: ShellConfig.theme.dark ? M.Material.Shade200 : M.Material.Shade500
+    readonly property color success: M.Material.color(M.Material.Green, shade)
+    readonly property color warn: M.Material.color(M.Material.Amber, shade)
+    readonly property color error: M.Material.color(M.Material.Red, shade)
 }

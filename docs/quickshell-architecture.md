@@ -7,6 +7,10 @@ One QML process owns every desktop surface, replacing waybar / wofi / mako /
 hyprlock one slice at a time. The structure is **vertical slices by feature plus
 one shared kernel** — no technical-layer folders.
 
+Rules a run of the shell would not catch (the style pragmas, the qualified
+Material import, where `config.json` may be edited) live in
+`config/quickshell/AGENTS.md`. Read it first.
+
 ## Skills own the generic rules
 
 Do not look for them here. `vertical-slice-architecture` owns slice shape and
@@ -14,28 +18,44 @@ the promote-on-third-use rule; `qt-qml` owns QML coding rules; `qt-ui-design`
 owns the type scale and colour-token naming. Qt API facts: verify against the
 `qt-docs` MCP server, never from memory.
 
-Three `qt-qml` rules are overridden here:
+Two `qt-qml` rules are overridden here:
 
 1. **`pragma Singleton` needs no `qmldir` entry.** Quickshell synthesizes module
    registration at runtime. There are no `qmldir` files in this tree and none
    should be added — a directory that has one stops getting the synthesis, so
    any type missing from the file stops existing at runtime.
-2. **Primitives over Qt Quick Controls.** Build from `QtQuick` + `shared/ui/`.
-   Reach for Controls only when a real control's behaviour (text editing, scroll
-   physics) is worth overriding its style.
-3. **No `qsTr()`.** Single-user shell; i18n is out of scope.
+2. **No `qsTr()`.** Single-user shell; i18n is out of scope.
 
 ## The one project principle
 
-**Nix owns configuration and theming; QML owns behaviour and layout.** No QML
-file hardcodes a colour, a font name, or a pixel constant — those come from
-`shared/theme/`. Nix generates *data* (`~/.config/omarchy/palette.json`), never
-`.qml`: every QML file is committed, so the tree runs from a fresh clone.
+**The user's JSON file owns configuration, QML owns behaviour and layout, Nix
+only builds and installs.** No QML file hardcodes a colour, a font name, or a
+pixel constant — sizes and motion come from `shared/theme/`, colours from the
+Material style. Every QML file is committed, so the tree runs from a fresh
+clone.
+
+The Nix palette is parked: Nix still writes it, nothing reads it. Plumbing it
+back in later changes only `Theme`.
+
+## UI
+
+- **Controls first.** Every visual that has a matching Qt Quick Control is that
+  Control, in the Material style. Primitives only where no Control fits: custom
+  `Shape` outlines, indicator dots, non-interactive pills.
+- **One `Surface` per window, as its root item.** It is the only place the
+  Material theme, accent and font are set. Slices never set them; per-control
+  attributes (`elevation`, `roundedScale`) are fine.
+- **Sizes and motion still come from `shared/theme/`.** Material supplies
+  colours and control behaviour, not the shell's spacing grid or timing.
+- **Fixed-height strips set control heights explicitly**, from a size token.
+  Material's default heights are taller than a bar.
 
 ## Layout
 
 ```
 config/quickshell/
+  AGENTS.md                 # the rules a run won't catch — read first
+  config.json               # the user's configuration, hand-edited
   shell.qml                 # composition root — the ONLY file importing qs.features.*
   dev-<slice>.qml           # per-slice harness; MUST sit at this root, not in the slice
   features/<slice>/
@@ -44,8 +64,9 @@ config/quickshell/
     <Base>.qml              # base components: shared behaviour and shape
     internal/               # concrete components built on the bases
   shared/                   # the kernel
-    theme/                  # Config (sizes, motion), Motion, Theme, Base16, Typography
-    ui/                     # themed dumb components, flat until one grows helpers
+    config/                 # the one singleton that loads config.json
+    theme/                  # sizes, motion, typography, Material choices
+    ui/                     # themed wrappers around Controls
     services/<x>/           # ONLY where there is real logic — see below
 ```
 
@@ -58,25 +79,44 @@ helpers prefixed with the unit name when the bare name would be generic
 (`AudioSink.qml`, `NetIcon.qml`). Helpers live inside their unit's folder, never
 in a catch-all `util/`.
 
-## Writing a slice
+## Slice template
 
-- **One entry point**, named after the directory. It is the slice's only public
-  surface. Everything else in the folder is private by convention — review
-  enforces it, QML cannot.
-- **Base components live next to the entry point; concrete ones in
-  `internal/`.** A component that defines behaviour and shape for others to
-  build on (a generic item, container or popup) is a base. It goes at the top
-  of the slice folder. A component that fills a base in with specific data or
-  logic goes in `internal/` and imports the slice (`import qs.features.<slice>`)
-  to get its base. Bases never import `internal/`. If a base would need
-  something from `internal/`, that thing is a base too, so move it up.
-- **Configuration arrives as properties** set by `shell.qml`. A slice never
-  reads a file or an env var itself.
-- **State that must survive hot reload goes in `<Slice>State.qml`.** Singletons
-  keep their property values across a reload; window and delegate properties are
-  rebuilt from bindings. Anything the user would hate to lose mid-edit (open
-  state, query text, expanded item) belongs in the singleton; derived values
-  belong in bindings.
+```
+features/<slice>/
+  <Slice>.qml        # entry point; flat properties in, nothing else public
+  <Slice>State.qml   # only if state must survive reload
+  <Base>.qml         # bases: behaviour and shape
+  internal/          # concrete components built on the bases
+dev-<slice>.qml      # at the config root
+```
+
+In order:
+
+1. **Directory** `features/<slice>/`, `lower-kebab`.
+2. **Entry point** `<Slice>.qml`, named after the directory. It is the slice's
+   only public surface. Configuration arrives as flat properties on it.
+   Everything else in the folder is private by convention — review enforces it,
+   QML cannot.
+3. **`<Slice>State.qml`**, only for state that must survive hot reload.
+   Singletons keep their property values across a reload; window and delegate
+   properties are rebuilt from bindings. Anything the user would hate to lose
+   mid-edit (open state, query text, expanded item) belongs in the singleton;
+   derived values belong in bindings.
+4. **Bases** at the top of the slice folder. A component that defines behaviour
+   and shape for others to build on (a generic item, container or popup) is a
+   base. Its header comment holds the feature's own conventions.
+5. **`internal/`** for concrete components that fill a base in with specific
+   data or logic. They import the slice (`import qs.features.<slice>`) to get
+   their bases. Bases never import `internal/`; if a base would need something
+   from there, that thing is a base too, so move it up.
+6. **`dev-<slice>.qml`** at the config root, starting with the pragma block from
+   `AGENTS.md`, mapping configuration onto the entry point exactly as
+   `shell.qml` does.
+7. **One line in `shell.qml`.** Reading `shell.qml` must tell you every feature
+   the shell has and nothing else.
+
+Rules that hold for every slice:
+
 - **Use Quickshell's `Singleton` as the root, not `QtObject`** — only the former
   joins the reload graph.
 - **Every file imports `QtQuick` explicitly.** `import Quickshell` alone gives no
@@ -89,20 +129,20 @@ in a catch-all `util/`.
   `hyprland/bindings.nix` as `global, quickshell:<name>`. `IpcHandler` is for
   scripts and debugging only — a `qs ipc call` spawns a process per keypress.
   Pair menus with `HyprlandFocusGrab` so click-outside dismisses.
+- **A feature's own conventions live with the feature**, in its base
+  component's header — not in this doc.
 
-Adding a feature: create the directory, add one line to `shell.qml`. Reading
-`shell.qml` must tell you every feature the shell has and nothing else.
+## Configuration
 
-## Privacy indicators
-
-A privacy indicator (microphone, camera — anything capturing the user) is its
-own kind of bar item, not a `BarItem` variant:
-
-- **The base owns the look; concrete items own only the tracking.** A concrete
-  indicator answers "is it in use" and "is there a device" and nothing else.
-- **Never inside a `BarGroup`.** It must stand alone to be noticed.
-- **Visibility is configuration:** always shown, or only while in use. It
-  arrives as a slice property like any other config.
+- **One declarative JSON file, loaded by one kernel singleton.** The user edits
+  it by hand; the shell only reads it.
+- **Roots map it, slices never read it.** `shell.qml` and each harness bind it
+  onto the entry point's flat properties. A slice never reads a file or an env
+  var itself.
+- **Colours are shell-wide**, read by `Theme`. Everything else is per slice.
+- **Defaults live in the loader**, so the shell runs with no file at all.
+- **Shallow until needed.** Deeper configuration (placement, ordering, layout)
+  is added when something needs it, not before.
 
 ## Shared kernel rules
 
@@ -114,10 +154,11 @@ own kind of bar item, not a `BarItem` variant:
   `UPower.devices`, primary-device selection.
 - A helper wanted by two concerns gets promoted to its own unit — and the copies
   are deleted in the same commit.
-- `shared/ui/` components take content and emit signals. No service access, no
-  IPC, no process spawning.
-- Slices import `Theme`, never `Base16`. That keeps a theme change one file and
-  stops `base0D` leaking into thirty call sites.
+- **`shared/ui/` holds themed wrappers around Controls.** They take content and
+  emit signals: no service access, no IPC, no process spawning. A wrapper is
+  added once two slices need the same styling.
+- **Colours come from `Theme` or the Material attached colours**, never
+  literals.
 - **Check new shared singleton names against QtQuick's types.** `Palette`,
   `Screen`, `Settings` and `Action` are taken; a collision resolves to the
   QtQuick type and reports every token as a missing property while the shell
@@ -179,6 +220,11 @@ waybar/wofi keep running until their replacement merges; each step ships alone.
 
 ## Review checklist
 
+- [ ] Every root file (`shell.qml`, each `dev-<slice>.qml`) starts with the
+      pragma block from `AGENTS.md`.
+- [ ] The Material module is imported qualified only; no other style module.
+- [ ] No slice sets `Material.theme`, `accent` or `font` — only `Surface` does.
+- [ ] Controls in a fixed-height strip have an explicit height.
 - [ ] No `import qs.features.*` outside `shell.qml`, `shared/` included —
       except a slice's `internal/` importing its own slice for its bases.
 - [ ] Bases at the slice top level, concrete components in `internal/`; no
@@ -186,13 +232,13 @@ waybar/wofi keep running until their replacement merges; each step ships alone.
 - [ ] Module imports (`qs.*`), never relative paths.
 - [ ] No `qmldir` file anywhere in the tree.
 - [ ] Slice config arrives as properties; no slice reads a file or env var.
-- [ ] No hex colour, font name or pixel constant outside `shared/theme/`.
-- [ ] Every `.qml` committed; Nix generated data, not QML.
+- [ ] Colours come from `Theme` or the Material attached colours, never
+      literals; no font name or pixel constant outside `shared/theme/`.
+- [ ] Every `.qml` committed; Nix generates data, not QML.
 - [ ] New `shared/services/` wrapper adds semantics, isn't a pass-through.
 - [ ] Quickshell `Singleton` root; `QtQuick` imported in every file.
 - [ ] New shared singleton name doesn't collide with a QtQuick type.
 - [ ] Reload-surviving state is in a singleton, not on a window.
 - [ ] No second `PanelWindow` for a popup; keybindings are `GlobalShortcut`.
-- [ ] The slice's `dev-<slice>.qml` runs against a tree with **no**
-      `~/.config/omarchy/palette.json` — fallback palette, only `FileView`'s own
-      "File does not exist" notice.
+- [ ] The slice's `dev-<slice>.qml` runs with **no** `config.json` and shows the
+      defaults — only `FileView`'s own "File does not exist" notice.

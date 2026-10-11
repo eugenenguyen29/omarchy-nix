@@ -1,8 +1,10 @@
 import QtQuick
+import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
 import qs.features.bar.internal
 import qs.shared.theme
+import qs.shared.ui
 
 // Slice entry point. Configuration arrives as properties from shell.qml; this
 // file reads no files and no env vars of its own.
@@ -14,6 +16,18 @@ Scope {
     // Privacy pills (camera, microphone): true keeps them as a dimmed glyph when idle,
     // false shows them only while in use.
     property bool privacyAlwaysShown: true
+
+    // Display flags, one per item; a hidden item lets its section close up.
+    property bool showWorkspaces: true
+    property bool showDate: true
+    property bool showClock: true
+    property bool showAudio: true
+    property bool showNetwork: true
+    property bool showPowerProfile: true
+    property bool showCpu: true
+    property bool showMemory: true
+    property bool showCamera: true
+    property bool showMicrophone: true
 
     // Hidden destroys the windows, so the reserved space goes with them.
     property bool shown: true
@@ -58,11 +72,21 @@ Scope {
 
             implicitHeight: Config.barHeight + popout.implicitHeight
 
-            Item {
+            // A click anywhere outside the bar window closes the control centre.
+            HyprlandFocusGrab {
+                windows: [bar]
+                active: popout.owner === controls
+                onCleared: popout.owner = null
+            }
+
+            Surface {
                 anchors.fill: parent
 
-                Rectangle {
+                // Paints Material.background as the bar colour.
+                Pane {
                     id: strip
+
+                    padding: 0
 
                     anchors {
                         top: parent.top
@@ -71,7 +95,6 @@ Scope {
                     }
 
                     height: Config.barHeight
-                    color: Theme.surface
 
                     // Sections, left to right. Each is independent: add a widget
                     // to one, and pass it `popout` if it should open the panel —
@@ -81,6 +104,7 @@ Scope {
                         anchors.leftMargin: Config.spacingLarge
 
                         BarWorkspaces {
+                            visible: root.showWorkspaces
                             screen: bar.modelData
                         }
                     }
@@ -89,10 +113,12 @@ Scope {
                         anchors.horizontalCenter: parent.horizontalCenter
 
                         BarDate {
+                            visible: root.showDate
                             popout: popout
                         }
 
                         BarClock {
+                            visible: root.showClock
                         }
                     }
 
@@ -102,26 +128,44 @@ Scope {
 
                         // Privacy pills stand alone — never inside a BarGroup.
                         BarCamera {
+                            shown: root.showCamera
                             alwaysShown: root.privacyAlwaysShown
                         }
 
                         BarMicrophone {
+                            shown: root.showMicrophone
                             alwaysShown: root.privacyAlwaysShown
                         }
 
-                        // Real item, then two placeholders until their
-                        // slices land.
                         BarGroup {
-                            BarAudio {}
+                            id: controls
 
-                            BarItem {
-                                icon: "󰍛"
-                                text: "12%"
+                            popout: popout
+                            // A third of the screen, whatever its resolution.
+                            panel: Component {
+                                ControlCenter {
+                                    panelWidth: bar.width / 3 - popout.leftPadding - popout.rightPadding
+                                }
                             }
 
-                            BarItem {
-                                icon: "󰾆"
-                                text: "7.4G"
+                            BarNetwork {
+                                visible: root.showNetwork
+                            }
+
+                            BarAudio {
+                                visible: root.showAudio
+                            }
+
+                            BarPowerProfile {
+                                visible: root.showPowerProfile
+                            }
+
+                            BarCpu {
+                                visible: root.showCpu
+                            }
+
+                            BarMemory {
+                                visible: root.showMemory
                             }
                         }
                     }

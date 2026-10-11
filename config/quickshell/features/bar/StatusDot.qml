@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls.Material as M
 import qs.shared.theme
 
 // The small pill on a bar item's corner that says whether the thing behind the
@@ -20,5 +21,5 @@ Rectangle {
     implicitWidth: 6
     implicitHeight: 4
     radius: height / 2
-    color: status === StatusDot.Error ? Theme.error : status === StatusDot.Active ? Theme.success : Theme.accent
+    color: status === StatusDot.Error ? Theme.error : status === StatusDot.Active ? Theme.success : M.Material.accent
 }

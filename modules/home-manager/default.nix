@@ -29,6 +29,8 @@ let
       }
     else
       null;
+
+  isLight = config.colorScheme.variant == "light";
 in
 {
   imports = [
@@ -65,9 +67,19 @@ in
   gtk = {
     enable = true;
     theme = {
-      name = if config.omarchy.theme == "generated_light" then "Adwaita" else "Adwaita:dark";
+      name = if isLight then "Adwaita" else "Adwaita-dark";
       package = pkgs.gnome-themes-extra;
     };
     gtk4.theme = null;
+  };
+
+  # GTK4/libadwaita, browsers and Electron read this, via the portal too.
+  dconf.settings."org/gnome/desktop/interface".color-scheme =
+    if isLight then "prefer-light" else "prefer-dark";
+
+  qt = {
+    enable = true;
+    platformTheme.name = "adwaita";
+    style.name = if isLight then "adwaita" else "adwaita-dark";
   };
 }

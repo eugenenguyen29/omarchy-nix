@@ -31,7 +31,6 @@ in
       # Force all apps to use Wayland
       "GDK_BACKEND,wayland"
       "QT_QPA_PLATFORM,wayland"
-      "QT_STYLE_OVERRIDE,kvantum"
       "SDL_VIDEODRIVER,wayland"
       "MOZ_ENABLE_WAYLAND,1"
       "ELECTRON_OZONE_PLATFORM_HINT,wayland"
@@ -48,7 +47,7 @@ in
       "EDITOR,nvim"
 
       # GTK theme
-      "GTK_THEME,${if cfg.theme == "generated_light" then "Adwaita" else "Adwaita:dark"}"
+      "GTK_THEME,${if config.colorScheme.variant == "light" then "Adwaita" else "Adwaita:dark"}"
 
       # Explicit (tiled) modifiers cost extra display-buffer blocks on Intel
       # gen9: with a 4K external attached, re-enabling eDP-1 (lid open) falls

@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import Quickshell
 import qs.features.bar
 import qs.shared.theme
@@ -15,10 +16,8 @@ BarItem {
     text: Qt.formatDateTime(clock.date, "HH:mm")
 
     content: Component {
-        Text {
+        Label {
             text: Qt.formatDateTime(clock.date, "HH:mm") + "  ·  UTC " + clock.date.toISOString().slice(11, 16)
-            color: Theme.text
-            font.family: Typography.family
             font.pixelSize: Typography.title
         }
     }

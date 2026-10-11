@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Controls.Material as M
 import Quickshell
 import qs.features.bar
 import qs.shared.theme
@@ -11,13 +13,11 @@ BarItem {
     }
 
     text: Qt.formatDate(clock.date, "ddd d MMM")
-    color: Theme.textMuted
+    color: M.Material.hintTextColor
 
     content: Component {
-        Text {
+        Label {
             text: Qt.formatDate(clock.date, "dddd, d MMMM yyyy")
-            color: Theme.text
-            font.family: Typography.family
             font.pixelSize: Typography.title
         }
     }
